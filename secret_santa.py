@@ -75,11 +75,6 @@ elif st.session_state.page == "credit_card":
 elif st.session_state.page == "secret_santa":
     st.title("Secret Santa Assignment 🎄")
 
-    # Show a message if the assignment has already been revealed
-    if st.session_state.assignment_revealed:
-        st.success(f"You are the Secret Santa for **{assignments[st.session_state.selected_name]}**! 🎁 Don't disappoint.")
-        st.stop()  # Stop further interaction
-
     st.write("Here are the available names:")
     st.write(", ".join(participants))
     
@@ -98,14 +93,24 @@ elif st.session_state.page == "secret_santa":
     # Checkbox to accept terms
     st.session_state.terms_accepted = st.checkbox("I agree to the above terms and conditions.")
 
-    # Reveal the assignment
+    # Move to reveal page
     if st.button("Reveal Your Assignment"):
         if not st.session_state.terms_accepted:
             st.error("You must accept the Terms and Conditions to proceed!")
-        elif name in assignments:
+        elif name:
             st.session_state.assignment_revealed = True  # Mark the assignment as revealed
             st.session_state.selected_name = name  # Store the selected name
-            st.success(f"You are the Secret Santa for **{assignments[name]}**! 🎁 Don't disappoint.")
-            st.stop()  # Stop further interaction after revealing the assignment
+            go_to_page("reveal")
         else:
-            st.error("Name not found! Please check your spelling or contact the organizer.")
+            st.error("Please select your name from the dropdown.")
+
+# Page: Reveal Assignment
+elif st.session_state.page == "reveal":
+    st.title("Your Secret Santa Assignment 🎅")
+    
+    # Show the assignment
+    if st.session_state.assignment_revealed:
+        assigned_name = assignments[st.session_state.selected_name]
+        st.success(f"You are the Secret Santa for **{assigned_name}**! 🎁 Don't disappoint.")
+    else:
+        st.error("No assignment to reveal. Please go back and complete the process.")
